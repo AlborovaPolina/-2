@@ -1,0 +1,32 @@
+<?php
+// Настройки подключения к БД (замените на свои, если знаете их)
+$host = 'localhost';
+$db_user = 'u12345'; // ваш логин от БД (обычно как номер зачетки)
+$db_pass = 'password'; // ваш пароль
+$db_name = 'u12345'; // имя вашей базы
+
+try {
+    $db = new PDO("mysql:host=$host;dbname=$db_name", $db_user, $db_pass, [
+        PDO::ATTR_PERSISTENT => true, 
+        PDO::ERRMODE_EXCEPTION => true
+    ]);
+
+    // Получаем данные из формы (имена в кавычках должны совпадать с name="..." в HTML)
+    $fio = $_POST['fio'] ?? '';
+    $phone = $_POST['phone'] ?? '';
+    $email = $_POST['email'] ?? '';
+    $birthday = $_POST['birthday'] ?? '';
+    $gender = $_POST['gender'] ?? '';
+    $bio = $_POST['bio'] ?? '';
+
+    // Подготовка запроса для безопасности
+    $stmt = $db->prepare("INSERT INTO application (fio, phone, email, birthday, gender, bio) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt->execute([$fio, $phone, $email, $birthday, $gender, $bio]);
+
+    echo "<h1>Данные успешно отправлены!</h1>";
+    echo '<a href="index.html">Вернуться к форме</a>';
+
+} catch (PDOException $e) {
+    echo "Ошибка: " . $e->getMessage();
+}
+?>
